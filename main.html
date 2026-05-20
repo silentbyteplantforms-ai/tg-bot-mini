@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TG Bot Mini · Iconic Tech</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0d12;
+    --surface: #111620;
+    --card: #161c28;
+    --border: #1e2a3a;
+    --tg: #2AABEE;
+    --tg2: #1a8fd1;
+    --accent: #00e5a0;
+    --red: #ff4d6d;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --radius: 14px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+    background-image:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(42,171,238,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 90%, rgba(0,229,160,0.05) 0%, transparent 60%);
+  }
+
+  /* ── Header ── */
+  .header {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--tg), var(--tg2));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(42,171,238,0.3);
+  }
+
+  .header-text h1 {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .header-text span {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: rgba(0,229,160,0.1);
+    border: 1px solid rgba(0,229,160,0.25);
+    color: var(--accent);
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+  }
+  .badge.offline {
+    background: rgba(255,77,109,0.1);
+    border-color: rgba(255,77,109,0.25);
+    color: var(--red);
+  }
+
+  /* ── Card ── */
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    width: 3px; height: 14px;
+    background: var(--tg);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ── Form ── */
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 7px;
+    letter-spacing: 0.5px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--tg);
+    box-shadow: 0 0 0 3px rgba(42,171,238,0.1);
+  }
+
+  input::placeholder { color: #2d3748; }
+
+  /* toggle visibility */
+  .input-wrap { position: relative; }
+  .input-wrap input { padding-right: 44px; }
+  .toggle-vis {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 15px; padding: 4px;
+    transition: color 0.2s;
+  }
+  .toggle-vis:hover { color: var(--tg); }
+
+  .hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.5;
+  }
+
+  .hint a { color: var(--tg); text-decoration: none; }
+
+  /* ── Buttons ── */
+  .btn-row { display: flex; gap: 10px; margin-top: 8px; }
+
+  .btn {
+    flex: 1;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--tg), var(--tg2));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(42,171,238,0.25);
+  }
+  .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-danger {
+    background: rgba(255,77,109,0.1);
+    color: var(--red);
+    border: 1px solid rgba(255,77,109,0.2);
+  }
+  .btn-danger:hover { background: rgba(255,77,109,0.2); }
+
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+  /* ── Status card ── */
+  .status-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px;
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+    box-shadow: 0 0 8px var(--red);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .dot.online {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 8px var(--accent); }
+    50% { box-shadow: 0 0 16px var(--accent); }
+  }
+
+  .status-text { flex: 1; }
+  .status-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+  .status-text small { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  /* ── Toast ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+    z-index: 999;
+    max-width: 340px;
+    text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  #toast.ok { border-color: rgba(0,229,160,0.3); color: var(--accent); }
+  #toast.err { border-color: rgba(255,77,109,0.3); color: var(--red); }
+
+  /* ── Guide ── */
+  .step {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(42,171,238,0.12);
+    color: var(--tg);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+  .step-text { font-size: 13px; line-height: 1.6; color: #94a3b8; }
+  .step-text code {
+    background: rgba(42,171,238,0.1);
+    color: var(--tg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+  .footer span { color: var(--tg); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">✈️</div>
+  <div class="header-text">
+    <h1>TG Bot Mini</h1>
+    <span>by Iconic Tech · v1.0.0</span>
+  </div>
+  <div class="badge offline" id="statusBadge">OFFLINE</div>
+</div>
+
+<!-- Status -->
+<div class="card" style="animation-delay:0.05s">
+  <div class="card-title">Bot Status</div>
+  <div class="status-row">
+    <div class="dot" id="statusDot"></div>
+    <div class="status-text">
+      <strong id="statusLabel">Not Running</strong>
+      <small id="statusSub">Configure your bot below to get started</small>
+    </div>
+  </div>
+</div>
+
+<!-- Config -->
+<div class="card" style="animation-delay:0.1s">
+  <div class="card-title">Bot Configuration</div>
+
+  <div class="field">
+    <label>BOT NAME</label>
+    <input type="text" id="botName" placeholder="My Telegram Bot" />
+  </div>
+
+  <div class="field">
+    <label>BOT TOKEN</label>
+    <div class="input-wrap">
+      <input type="password" id="token" placeholder="123456789:ABCDefGhIJKlmNoPQRsTUVwxyZ" />
+      <button class="toggle-vis" onclick="toggleVis('token', this)">👁</button>
+    </div>
+    <div class="hint">Get from <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → /newbot</div>
+  </div>
+
+  <div class="field">
+    <label>YOUR CHAT ID</label>
+    <input type="text" id="chatId" placeholder="e.g. 123456789" />
+    <div class="hint">Get from <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> · Send /start to it</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="startBtn" onclick="startBot()">▶ Start Bot</button>
+    <button class="btn btn-danger" id="stopBtn" onclick="stopBot()" disabled>■ Stop</button>
+  </div>
+</div>
+
+<!-- Guide -->
+<div class="card" style="animation-delay:0.15s">
+  <div class="card-title">Quick Setup Guide</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-text">Open Telegram and search for <code>@BotFather</code>. Send <code>/newbot</code> and follow the steps to create your bot. Copy the token it gives you.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-text">Search for <code>@userinfobot</code> and send <code>/start</code>. It'll reply with your Chat ID. Copy that number.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-text">Paste both above → click <strong>Start Bot</strong>. Your bot will send you a confirmation message on Telegram instantly.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-text">Your bot responds to <code>/start</code>, <code>/help</code>, <code>/id</code>, and <code>/ping</code> out of the box.</div>
+  </div>
+</div>
+
+<div class="footer">© 2025 <span>Iconic Tech</span> · SilentByte Platforms Inc.</div>
+
+<div id="toast"></div>
+
+<script>
+  let running = false;
+
+  async function loadConfig() {
+    try {
+      const r = await fetch('/api/config');
+      const cfg = await r.json();
+      if (cfg.botName) document.getElementById('botName').value = cfg.botName;
+      if (cfg.chatId) document.getElementById('chatId').value = cfg.chatId;
+      if (cfg.tokenSet) document.getElementById('token').placeholder = cfg.tokenPreview + ' (saved)';
+      setStatus(cfg.started);
+    } catch {}
+  }
+
+  async function pollStatus() {
+    try {
+      const r = await fetch('/api/status');
+      const s = await r.json();
+      if (s.running !== running) setStatus(s.running);
+    } catch {}
+  }
+
+  function setStatus(on) {
+    running = on;
+    const dot = document.getElementById('statusDot');
+    const label = document.getElementById('statusLabel');
+    const sub = document.getElementById('statusSub');
+    const badge = document.getElementById('statusBadge');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    if (on) {
+      dot.classList.add('online');
+      label.textContent = 'Bot Running';
+      sub.textContent = 'Your Telegram bot is active and listening';
+      badge.textContent = 'ONLINE';
+      badge.classList.remove('offline');
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    } else {
+      dot.classList.remove('online');
+      label.textContent = 'Not Running';
+      sub.textContent = 'Configure your bot below to get started';
+      badge.textContent = 'OFFLINE';
+      badge.classList.add('offline');
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    }
+  }
+
+  async function startBot() {
+    const token = document.getElementById('token').value.trim();
+    const chatId = document.getElementById('chatId').value.trim();
+    const botName = document.getElementById('botName').value.trim() || 'TG Bot Mini';
+
+    if (!token || !token.includes(':')) {
+      showToast('❌ Enter a valid bot token', 'err'); return;
+    }
+    if (!chatId) {
+      showToast('❌ Enter your Chat ID', 'err'); return;
+    }
+
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('startBtn').textContent = '⏳ Starting...';
+
+    try {
+      const r = await fetch('/api/start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, chatId, botName })
+      });
+      const data = await r.json();
+
+      if (data.ok) {
+        setStatus(true);
+        showToast(data.message, 'ok');
+      } else {
+        showToast('❌ ' + data.error, 'err');
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('startBtn').textContent = '▶ Start Bot';
+      }
+    } catch (e) {
+      showToast('❌ Network error', 'err');
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').textContent = '▶ Start Bot';
+    }
+  }
+
+  async function stopBot() {
+    try {
+      const r = await fetch('/api/stop', { method: 'POST' });
+      const data = await r.json();
+      setStatus(false);
+      document.getElementById('startBtn').textContent = '▶ Start Bot';
+      showToast(data.message, 'ok');
+    } catch {
+      showToast('❌ Failed to stop', 'err');
+    }
+  }
+
+  function toggleVis(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = ''; }, 3500);
+  }
+
+  // Init
+  loadConfig();
+  setInterval(pollStatus, 5000);
+</script>
+</body>
+</html>
